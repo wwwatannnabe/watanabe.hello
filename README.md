@@ -1,1 +1,1 @@
-webサイト用のrepository.
+Fepository for webcite.
