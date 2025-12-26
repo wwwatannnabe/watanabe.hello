@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>study for webcite</title>
+    <style>
+        /* 全体の背景 */
+        body {
+            margin: 0;
+            padding: 40px 20px;
+            font-family: sans-serif;
+            line-height: 1.6;
+            background-color: cadetblue; /* お好みの背景色 */
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+        }
+
+        /* ページのメインタイトル（紙の外） */
+        header {
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 20px;
+            color: white; /* 暗い背景で見えやすいように白に */
+        }
+
+        header h1 {
+            border-bottom: 2px solid white;
+            padding-bottom: 10px;
+            margin: 0;
+        }
+
+        /* 白塗りのキャンバス（紙） */
+        main {
+            background-color: white;
+            width: 100%;
+            max-width: 800px;
+            padding: 50px;
+            box-sizing: border-box;
+            color: #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-radius: 4px;
+        }
+
+        h2 {
+            text-align: left;
+            padding-left: 20px; /* 余白を調整 */
+            border-left: 5px solid cadetblue; /* ちょっとしたアクセント */
+            margin-bottom: 20px;
+        }
+
+        ul {
+            padding-left: 40px;
+        }
+
+        /* Homeに戻るボタン（紙のすぐ下） */
+        .nav-container {
+            width: 100%;
+            max-width: 800px;
+            margin-top: 20px;
+            text-align: right; /* 右寄せ */
+        }
+
+        .nav-container a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            background-color: rgba(0,0,0,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: 0.3s;
+        }
+
+        .nav-container a:hover {
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        /* フッター */
+        footer {
+            margin-top: 40px;
+            color: rgba(255,255,255,0.7);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>仮想化ネットワークとは</h1>
+    </header>
+
+    <main>
+        <h2>こんにちは</h2>
+        <ul>
+            <li>ここに色々かくよ</li>
+            <li>箇条書きが続くよ</li>
+        </ul>
+    </main>
+
+    <nav class="nav-container">
+        <a href="../index.html">← homeに戻る</a>
+    </nav>
+
+    <footer>
+        <p>&copy; 2025 wwwatannnabe</p>
+    </footer>
+
+</body>
+</html>

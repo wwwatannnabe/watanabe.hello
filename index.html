@@ -5,25 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>study for webcite</title>
     <style>
+        /* 1. 外側の背景色（暗めにする） */
         body {
-            max-width: 800px;    /* サイトの最大幅を決める */
-            margin: 0 auto;      /* 左右の隙間を自動で均等にする（真ん中寄せ） */
-            padding: 20px;       /* 端に少し余白を作る */
-            font-family: sans-serif; /* 文字を見やすいフォントにする */
-            line-height: 1.6;    /* 行間を少し広げて読みやすくする */
+            margin: 0;
+            padding: 40px 20px; /* 上下に余裕を持たせる */
+            font-family: sans-serif;
+            line-height: 1.6;
+            background-color: cadetblue;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* 中央寄せ */
+        }
+
+        /* 2. 背景の上の「白塗り」部分（紙） */
+        main {
+            background-color: white; /* ここを白塗りにする */
+            width: 100%;
+            max-width: 800px;
+            padding: 50px; /* 紙の中の余白 */
+            box-sizing: border-box;
+            color: #333; /* 文字は濃いグレーで読みやすく */
+            
+            /* 紙っぽく見せるための影 */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-radius: 4px; /* 角をほんの少し丸く */
         }
 
         h1 {
-            text-align: left;  /* タイトルを中央に寄せる */
-            border-bottom: 2px solid #333; /* 見出しの下に線を引く */
+            border-bottom: 2px solid #333;
             padding-bottom: 10px;
+            margin-top: 0;
         }
-        h2{
-            text-align: left;  /* タイトルを中央に寄せる */
-            padding-left:40pt;
+
+        h2 {
+            padding-left: 20pt; /* 少し余白を調整 */
+            margin-top: 30px;
         }
-        ul{
-            padding-left:80pt;
+
+        ul {
+            padding-left: 60pt;
+        }
+
+        /* フッターも紙の外で見えるように */
+        footer {
+            margin-top: 20px;
+            color: #888;
+            text-align: center;
         }
     </style>
 </head>
@@ -36,10 +63,15 @@
         </section>
 
         <section>
-            <h1>見出し</h1>
+            <h1>セクション</h1>
             <h2>study</h2>
             <ul>
-                <li><a href="github.html">githubの使い方.</a></li>
+                <li><a href="study/VNW.html">仮想化ネットワークとは</a></li>
+            </ul>
+            <h2>manual</h2>
+            <ul>
+                <li><a href="manual/github.html">githubの使い方.</a></li>
+            </ul>
         </section>
     </main>
 

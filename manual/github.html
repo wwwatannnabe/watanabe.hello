@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>study for webcite</title>
+    <style>
+        body {
+            max-width: 800px;    /* サイトの最大幅を決める */
+            margin: 0 auto;      /* 左右の隙間を自動で均等にする（真ん中寄せ） */
+            padding: 20px;       /* 端に少し余白を作る */
+            font-family: sans-serif; /* 文字を見やすいフォントにする */
+            line-height: 1.6;    /* 行間を少し広げて読みやすくする */
+        }
+
+        h1 {
+            text-align: left;  /* タイトルを中央に寄せる */
+            border-bottom: 2px solid #333; /* 見出しの下に線を引く */
+            padding-bottom: 10px;
+        }
+        h2{
+            text-align: left;  /* タイトルを中央に寄せる */
+            padding-left:40pt;
+        }
+        ul{
+            padding-left:80pt;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>github簡単講座</h1>
+        <nav>
+            <a href="index.html">homeに戻る</a>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <h2>githubと連携</h2>
+            <ul>
+                <li>ssh-keygen -t ed25519 -C "your_server@example.jp"</li>
+                <li>cat ~/.ssh/id_ed25519.pub</li>
+                <li>ssh key in github</li>
+            </ul>
+            <h2>基本コマンド</h2>
+            <ul>
+                <li>git clone #git_repository</li>
+                <li>git add #filename or . </li>
+                <li>git commit -m "message"</li>
+                <li>git push origin main</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 wwwatannnabe</p>
+    </footer>
+
+</body>
+</html>
