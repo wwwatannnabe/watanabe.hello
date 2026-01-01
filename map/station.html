@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自転車置き場 - Map</title>
+    <style>
+        body {
+            margin: 0; padding: 20px; font-family: sans-serif;
+            background-color: cadetblue; display: flex; flex-direction: column; align-items: center; 
+        }
+
+        /* ログイン画面 */
+        #lock-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: cadetblue; display: flex; justify-content: center; align-items: center; z-index: 1000;
+        }
+        .login-box { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; width: 90%; max-width: 300px; }
+        .login-box input { width: 100%; padding: 10px; margin: 15px 0; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+        .login-box button { background-color: cadetblue; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+
+        /* コンテンツ */
+        #protected-content { display: none; width: 100%; max-width: 800px; }
+        header { width: 100%; margin-bottom: 20px; color: white; }
+        header h1 { border-bottom: 2px solid white; padding-bottom: 10px; margin: 0; }
+        main { background-color: white; width: 100%; padding: 30px; box-sizing: border-box; color: #333; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border-radius: 4px; }
+
+        .status-info { text-align: center; margin-bottom: 15px; font-weight: bold; color: cadetblue; }
+
+        .grid-wrapper { overflow-x: auto; margin: 20px 0; display: flex; justify-content: center; }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(20, 25px);
+            grid-template-rows: repeat(20, 25px);
+            gap: 1px;
+            background-color: #ddd;
+            border: 2px solid #ccc;
+        }
+        .tile { width: 25px; height: 25px; background-color: white; cursor: pointer; }
+        
+        /* 自分でクリックした時の色（緑） */
+        .tile.green { background-color: #28a745; }
+        
+        /* 固定マスの色（黒） */
+        .tile.fixed { background-color: #333; cursor: default; }
+
+        .nav-container { text-align: right; margin-top: 20px; }
+        .nav-container a { color: white; text-decoration: none; font-weight: bold; background-color: rgba(0,0,0,0.2); padding: 8px 16px; border-radius: 20px; }
+        footer { margin-top: 40px; color: rgba(255,255,255,0.7); font-size: 0.8em; }
+    </style>
+</head>
+<body>
+
+    <div id="lock-screen">
+        <div class="login-box">
+            <h3>Password Required</h3>
+            <input type="password" id="pass-input" placeholder="パスワードを入力">
+            <button onclick="checkPassword()">ENTER</button>
+            <p id="error-msg" style="color: red; font-size: 0.8em; display: none;">パスワードが違います</p>
+        </div>
+    </div>
+
+    <div id="protected-content">
+        <header>
+            <h1>自転車置き場</h1>
+            <nav class="nav-container"><a href="../index.html">← homeに戻る</a></nav>
+        </header>
+
+        <main>
+            <section>
+                <h2>進行状況マップ (20x20)</h2>
+                
+                <div class="grid-wrapper">
+                    <div class="grid-container" id="grid"></div>
+                </div>
+
+            </section>
+        </main>
+        <footer><p>&copy; 2025 wwwatannnabe</p></footer>
+    </div>
+
+    <script>
+        const PASSWORD = "nawa"; 
+        const SIZE = 20;
+        const GRID_SIZE = SIZE * SIZE;
+        const storageKey = 'gridStates_20_green_fixed';
+
+        // 固定マスの計算（外枠 + 指定の3本線）
+        const FIXED_BLACK_TILES = [];
+        for(let i=0; i<GRID_SIZE; i++) {
+            const row = Math.floor(i / SIZE);
+            const col = i % SIZE;
+            
+            const isBorder = (row === 0 || row === SIZE-1 || col === 0 || col === SIZE-1);
+            const isVerticalLine = (col === 5 || col === 10 || col === 15) && (row >= 3 && row <= 16);
+
+            if (isBorder || isVerticalLine) {
+                FIXED_BLACK_TILES.push(i);
+            }
+        }
+
+        const gridContainer = document.getElementById('grid');
+        let gridStates = JSON.parse(localStorage.getItem(storageKey)) || {};
+
+        function createGrid() {
+            gridContainer.innerHTML = '';
+            const fragment = document.createDocumentFragment();
+            for (let i = 0; i < GRID_SIZE; i++) {
+                const tile = document.createElement('div');
+                tile.classList.add('tile');
+                
+                if (FIXED_BLACK_TILES.includes(i)) {
+                    tile.classList.add('fixed');
+                } else {
+                    if (gridStates[i]) tile.classList.add('green');
+                    tile.addEventListener('click', () => toggleTile(tile, i));
+                }
+                fragment.appendChild(tile);
+            }
+            gridContainer.appendChild(fragment);
+            updateStatus();
+        }
+
+        function toggleTile(element, index) {
+            const isGreen = element.classList.toggle('green');
+            if (isGreen) { gridStates[index] = true; } 
+            else { delete gridStates[index]; }
+            localStorage.setItem(storageKey, JSON.stringify(gridStates));
+            updateStatus();
+        }
+
+        function updateStatus() {
+            const fixedCount = FIXED_BLACK_TILES.length;
+            const manualCount = Object.keys(gridStates).length;
+            const total = fixedCount + manualCount;
+            const percent = ((total / GRID_SIZE) * 100).toFixed(1);
+            document.getElementById('completed-count').textContent = total;
+            document.getElementById('percentage').textContent = percent;
+        }
+
+        function checkPassword() {
+            if (document.getElementById('pass-input').value === PASSWORD) {
+                document.getElementById('lock-screen').style.display = 'none';
+                document.getElementById('protected-content').style.display = 'block';
+                sessionStorage.setItem('auth_nawa_final_ver', 'true');
+            } else {
+                document.getElementById('error-msg').style.display = 'block';
+            }
+        }
+
+        window.onload = function() {
+            createGrid();
+            if (sessionStorage.getItem('auth_nawa_final_ver') === 'true') {
+                document.getElementById('lock-screen').style.display = 'none';
+                document.getElementById('protected-content').style.display = 'block';
+            }
+        };
+
+        document.getElementById('pass-input').addEventListener('keypress', (e) => { 
+            if (e.key === 'Enter') checkPassword(); 
+        });
+    </script>
+</body>
+</html>

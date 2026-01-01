@@ -1,56 +1,133 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
+    <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>工業大学生による最低限勉強</title>
+    <title>hello - study for webcite</title>
     <style>
-        /* 1. 外側の背景色（暗めにする） */
+        /* 全体の背景 */
         body {
             margin: 0;
-            padding: 40px 20px; /* 上下に余裕を持たせる */
+            padding: 40px 20px;
             font-family: sans-serif;
             line-height: 1.6;
-            background-color: cadetblue;
+            background-color: cadetblue; /* お好みの背景色 */
             display: flex;
             flex-direction: column;
-            align-items: center; /* 中央寄せ */
+            align-items: center; 
         }
 
-        /* 2. 背景の上の「白塗り」部分（紙） */
-        main {
-            background-color: white; /* ここを白塗りにする */
+        /* ページのメインタイトル（紙の外） */
+        header {
             width: 100%;
             max-width: 800px;
-            padding: 50px; /* 紙の中の余白 */
-            box-sizing: border-box;
-            color: #333; /* 文字は濃いグレーで読みやすく */
-            
-            /* 紙っぽく見せるための影 */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border-radius: 4px; /* 角をほんの少し丸く */
+            margin-bottom: 20px;
+            color: white; /* 暗い背景で見えやすいように白に */
         }
 
-        h1 {
-            border-bottom: 2px solid #333;
+        header h1 {
+            border-bottom: 2px solid white;
             padding-bottom: 10px;
-            margin-top: 0;
+            margin: 0;
+        }
+
+        /* 白塗りのキャンバス（紙） */
+        main {
+            background-color: white;
+            width: 100%;
+            max-width: 800px;
+            padding: 50px;
+            box-sizing: border-box;
+            color: #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-radius: 4px;
         }
 
         h2 {
-            padding-left: 20pt; /* 少し余白を調整 */
+            text-align: left;
+            padding-left: 20px; /* 余白を調整 */
+            border-left: 5px solid cadetblue; /* ちょっとしたアクセント */
+            margin-bottom: 20px;
+            margin-top: 40px; /* セクション間の余白 */
+        }
+
+        h3 {
             margin-top: 30px;
+            color: #555;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 5px;
+        }
+
+        p {
+            margin-bottom: 1em;
         }
 
         ul {
-            padding-left: 60pt;
+            padding-left: 40px;
+            margin-bottom: 1em;
+        }
+        ol {
+            padding-left: 40px;
+            margin-bottom: 1em;
         }
 
-        /* フッターも紙の外で見えるように */
-        footer {
+        code {
+            background-color: #eee;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+
+        pre {
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 20px 0;
+            overflow-x: auto; /* コードが長すぎるときにスクロール */
+            border-radius: 5px;
+        }
+        pre code {
+            display: block; /* preタグの中でコードブロックとして表示 */
+            background-color: transparent; /* preの中で背景を透明に */
+            padding: 0;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+
+
+        /* Homeに戻るボタン（紙のすぐ下） */
+        .nav-container {
+            width: 100%;
+            max-width: 800px;
             margin-top: 20px;
-            color: #888;
-            text-align: center;
+            text-align: right; /* 右寄せ */
+        }
+
+        .nav-container a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            background-color: rgba(0,0,0,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: 0.3s;
+        }
+
+        .nav-container a:hover {
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        /* フッター */
+        footer {
+            margin-top: 40px;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.8em;
         }
     </style>
 </head>
@@ -76,6 +153,10 @@
             <ul>
                 <li><a href="html/main.html">html入門</a></li>
             </ul>
+            <h2>map in nawa</h2>
+            <ul>
+                <li><a href="map/station.html">自転車置き場</a></li>
+            </ul>            
         </section>
     </main>
 

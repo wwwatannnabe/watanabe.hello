@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>理系学生の後輩のための最低限勉強</title>
+    <title>hello - study for html</title>
     <style>
         /* 全体の背景 */
         body {
@@ -48,11 +48,58 @@
             padding-left: 20px; /* 余白を調整 */
             border-left: 5px solid cadetblue; /* ちょっとしたアクセント */
             margin-bottom: 20px;
+            margin-top: 40px; /* セクション間の余白 */
+        }
+
+        h3 {
+            margin-top: 30px;
+            color: #555;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 5px;
+        }
+
+        p {
+            margin-bottom: 1em;
         }
 
         ul {
             padding-left: 40px;
+            margin-bottom: 1em;
         }
+        ol {
+            padding-left: 40px;
+            margin-bottom: 1em;
+        }
+
+        code {
+            background-color: #eee;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+
+        pre {
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 20px 0;
+            overflow-x: auto; /* コードが長すぎるときにスクロール */
+            border-radius: 5px;
+        }
+        pre code {
+            display: block; /* preタグの中でコードブロックとして表示 */
+            background-color: transparent; /* preの中で背景を透明に */
+            padding: 0;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+
 
         /* Homeに戻るボタン（紙のすぐ下） */
         .nav-container {
@@ -80,19 +127,119 @@
         footer {
             margin-top: 40px;
             color: rgba(255,255,255,0.7);
+            font-size: 0.8em;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>htmlの基本</h1>
-        <h2>構成</h2>
-        <h2>タグ一覧</h2>
+        <h1>HTML入門</h1>
+        <nav class="nav-container">
+        <a href="../index.html">← homeに戻る</a>
+    </nav>
     </header>
 
     <main>
-        <h2>こんにちは</h2>
+        <h2>1. HTMLとは？</h2>
+        <p>
+            HTML（HyperText Markup Language）は、Webページの構造を定義するためのマークアップ言語です。<br>
+            見出し、段落、画像、リンクなど、Webページに表示される要素の意味や役割を指定します。
+        </p>
+        <p>
+            WebブラウザはHTMLファイルを読み込み、その指示に従ってページを整形し、ユーザーに表示します。
+        </p>
+
+        <h2>2. 基本的なHTMLタグの構造</h2>
+        <p>
+            HTMLの要素は、多くの場合「開始タグ」と「終了タグ」で囲まれます。その中にコンテンツ（内容）を記述します。<br>
+            例: <code>&lt;p&gt;これは段落です&lt;/p&gt;</code>
+        </p>
+        <p>
+            終了タグがない「単独タグ（空要素タグ）」もあります。<br>
+            例: <code>&lt;img&gt;</code> (画像), <code>&lt;br&gt;</code> (改行)
+        </p>
+
+        <h3>HTMLファイルの基本構造</h3>
+        <pre><code>
+&lt;!DOCTYPE html&gt;  &lt;!-- これはHTML5の文書であることを宣言します --&gt;
+&lt;html lang="ja"&gt; &lt;!-- ページの言語が日本語であることを示します --&gt;
+&lt;head&gt;           &lt;!-- ページの情報（見えない部分） --&gt;
+    &lt;meta charset="UTF-8"&gt; &lt;!-- 文字コードを指定 --&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt; &lt;!-- レスポンシブ対応 --&gt;
+    &lt;title&gt;ページのタイトル&lt;/title&gt; &lt;!-- ブラウザのタブに表示されるタイトル --&gt;
+&lt;/head&gt;
+&lt;body&gt;           &lt;!-- ページに表示される内容（見える部分） --&gt;
+    &lt;h1&gt;メインタイトル&lt;/h1&gt;
+    &lt;p&gt;ここにコンテンツが入ります。&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+        </code></pre>
+
+        <h2>3. よく使うHTMLタグ</h2>
+        <h3>見出しタグ (&lt;h1&gt;〜&lt;h6&gt;)</h3>
+        <p>ページの階層的な構造を表す見出しです。<code>&lt;h1&gt;</code>が最も大きく、<code>&lt;h6&gt;</code>が最も小さいです。</p>
+        <pre><code>
+&lt;h1&gt;大見出し&lt;/h1&gt;
+&lt;h2&gt;中見出し&lt;/h2&gt;
+&lt;h3&gt;小見出し&lt;/h3&gt;
+        </code></pre>
+
+        <h3>段落タグ (&lt;p&gt;)</h3>
+        <p>文章の段落を表します。</p>
+        <pre><code>
+&lt;p&gt;これは最初の段落です。&lt;/p&gt;
+&lt;p&gt;これは次の段落です。&lt;/p&gt;
+        </code></pre>
+
+        <h3>リストタグ (&lt;ul&gt;, &lt;ol&gt;, &lt;li&gt;)</h3>
+        <p>
+            項目を並べる際に使用します。<br>
+            <code>&lt;ul&gt;</code> は順序なしリスト（・で表示）、<code>&lt;ol&gt;</code> は順序付きリスト（1. 2. 3. で表示）です。<br>
+            各項目は <code>&lt;li&gt;</code> で囲みます。
+        </p>
+        <h4>順序なしリストの例:</h4>
+        <pre><code>
+&lt;ul&gt;
+    &lt;li&gt;りんご&lt;/li&gt;
+    &lt;li&gt;バナナ&lt;/li&gt;
+    &lt;li&gt;みかん&lt;/li&gt;
+&lt;/ul&gt;
+        </code></pre>
+        <h4>順序付きリストの例:</h4>
+        <pre><code>
+&lt;ol&gt;
+    &lt;li&gt;ご飯を食べる&lt;/li&gt;
+    &lt;li&gt;歯を磨く&lt;/li&gt;
+    &lt;li&gt;寝る&lt;/li&gt;
+&lt;/ol&gt;
+        </code></pre>
+
+        <h3>リンクタグ (&lt;a&gt;)</h3>
+        <p>他のページへ移動するためのリンクを作成します。<code>href</code>属性でリンク先のURLを指定します。</p>
+        <pre><code>
+&lt;a href="https://www.google.com"&gt;Googleへ&lt;/a&gt;
+&lt;a href="next-page.html"&gt;次のページへ&lt;/a&gt;
+        </code></pre>
+
+        <h3>画像タグ (&lt;img&gt;)</h3>
+        <p>画像をWebページに表示します。<code>src</code>属性で画像ファイルのパス、<code>alt</code>属性で代替テキストを指定します。</p>
+        <pre><code>
+&lt;img src="image.jpg" alt="これは写真の説明です" width="300"&gt;
+        </code></pre>
+
+        <h2>4. HTMLファイルの作成と表示</h2>
+        <ol>
+            <li>メモ帳などのテキストエディタを開きます。</li>
+            <li>上記のHTMLコードを貼り付けます。</li>
+            <li>ファイルを「`index.html`」や「`html_intro.html`」のような名前で保存します。この際、ファイルの種類を「すべてのファイル」にして、文字コードを「UTF-8」に設定してください。</li>
+            <li>保存したファイルをWebブラウザ（Chrome, Firefoxなど）で開くと、Webページとして表示されます。</li>
+        </ol>
+        <p>
+            これでHTMLの基本的な部分を理解できたかと思います。<br>
+            次は、CSS（Webページの装飾）やJavaScript（Webページに動きをつける）について学んでいくと、さらに表現の幅が広がります。
+        </p>
+
     </main>
 
     <nav class="nav-container">
