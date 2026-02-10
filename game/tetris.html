@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>hello - puyo mobile</title>
+    <title>hello - tetris mobile</title>
     <style>
         /* 全体の背景：カデットブルー */
         body {
@@ -24,7 +24,7 @@
         #game-container { text-align: center; width: 100%; }
         .score { font-size: 1.8em; font-weight: bold; color: cadetblue; margin-bottom: 10px; }
         
-        /* ぷよぷよ画面 */
+        /* ゲーム画面 */
         canvas { 
             background-color: #000; border: 4px solid #333; border-radius: 4px; 
             max-width: 100%; height: auto; 
@@ -43,7 +43,7 @@
         }
         .ctrl-btn:active { background-color: #ddd; transform: scale(0.95); }
 
-        /* システムボタン（START / STOP / RESET） */
+        /* システムボタン */
         .button-group { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
         .sys-btn {
             padding: 10px 20px; font-size: 0.9em; font-weight: bold; color: white;
@@ -63,7 +63,7 @@
 <body>
 
     <header>
-        <h1>ぷよぷよ - スマホ完全版</h1>
+        <h1>テトリス - スマホ完全版</h1>
         <nav class="nav-container">
             <a href="../index.html">← homeに戻る</a>
         </nav>
@@ -72,7 +72,7 @@
     <main>
         <div id="game-container">
             <div class="score" id="score">SCORE: 0</div>
-            <canvas id="puyo" width="240" height="480"></canvas>
+            <canvas id="tetris" width="240" height="400"></canvas>
             
             <div class="controller">
                 <div class="row">
@@ -98,156 +98,136 @@
     </footer>
 
     <script>
-        const canvas = document.getElementById('puyo');
-        const ctx = canvas.getContext('2d');
+        const canvas = document.getElementById('tetris');
+        const context = canvas.getContext('2d');
         const scoreElement = document.getElementById('score');
         const startBtn = document.getElementById('start-btn');
         const stopBtn = document.getElementById('stop-btn');
         const resetBtn = document.getElementById('reset-btn');
 
-        const COLS = 6;
-        const ROWS = 12;
-        const SIZE = 40;
-        ctx.scale(SIZE, SIZE);
+        context.scale(20, 20);
 
-        let board = Array.from({length: ROWS}, () => Array(COLS).fill(0));
-        let score = 0;
         let isRunning = false;
         let requestId = null;
         let lastTime = 0;
         let dropCounter = 0;
-        let puyo = { pos: {x: 2, y: 0}, colors: [1, 2], rot: 0 };
-        const COLORS = [null, '#ff3e3e', '#3e3eff', '#3eff3e', '#ffff3e'];
+        let dropInterval = 1000;
 
-        function drawPuyo(x, y, color) {
-            ctx.fillStyle = COLORS[color];
-            ctx.beginPath();
-            ctx.arc(x + 0.5, y + 0.5, 0.45, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = 'rgba(255,255,255,0.3)';
-            ctx.beginPath();
-            ctx.arc(x + 0.35, y + 0.35, 0.1, 0, Math.PI * 2);
-            ctx.fill();
+        const colors = [null, '#FF0D72', '#0DC2FF', '#0DFF72', '#F538FF', '#FF8E0D', '#FFE138', '#3877FF'];
+        const arena = Array.from({length: 20}, () => Array(12).fill(0));
+        const player = { pos: {x: 0, y: 0}, matrix: null, score: 0 };
+
+        function createPiece(type) {
+            if (type === 'T') return [[0, 1, 0], [1, 1, 1], [0, 0, 0]];
+            if (type === 'O') return [[2, 2], [2, 2]];
+            if (type === 'L') return [[0, 3, 0], [0, 3, 0], [0, 3, 3]];
+            if (type === 'J') return [[0, 4, 0], [0, 4, 0], [4, 4, 0]];
+            if (type === 'I') return [[0, 5, 0, 0], [0, 5, 0, 0], [0, 5, 0, 0], [0, 5, 0, 0]];
+            if (type === 'S') return [[0, 6, 6], [6, 6, 0], [0, 0, 0]];
+            if (type === 'Z') return [[7, 7, 0], [0, 7, 7], [0, 0, 0]];
         }
 
         function draw() {
-            ctx.fillStyle = '#000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            board.forEach((row, y) => row.forEach((col, x) => {
-                if (col > 0) drawPuyo(x, y, col);
-            }));
-            if (isRunning && puyo.matrix !== null) {
-                drawPuyo(puyo.pos.x, puyo.pos.y, puyo.colors[0]);
-                const subPos = getSubPuyoPos();
-                drawPuyo(subPos.x, subPos.y, puyo.colors[1]);
-            }
+            context.fillStyle = '#000';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            drawMatrix(arena, {x: 0, y: 0});
+            drawMatrix(player.matrix, player.pos);
         }
 
-        function getSubPuyoPos() {
-            const rots = [{x:0, y:-1}, {x:1, y:0}, {x:0, y:1}, {x:-1, y:0}];
-            return { x: puyo.pos.x + rots[puyo.rot].x, y: puyo.pos.y + rots[puyo.rot].y };
-        }
-
-        function rotate() {
-            const oldRot = puyo.rot;
-            puyo.rot = (puyo.rot + 1) % 4;
-            const sub = getSubPuyoPos();
-            if (sub.x < 0 || sub.x >= COLS || sub.y >= ROWS || (sub.y >= 0 && board[sub.y][sub.x])) {
-                puyo.rot = oldRot;
-            }
-        }
-
-        function move(dir) {
-            puyo.pos.x += dir;
-            const sub = getSubPuyoPos();
-            if (puyo.pos.x < 0 || puyo.pos.x >= COLS || sub.x < 0 || sub.x >= COLS || 
-                (puyo.pos.y >= 0 && board[puyo.pos.y][puyo.pos.x]) || (sub.y >= 0 && board[sub.y][sub.x])) {
-                puyo.pos.x -= dir;
-            }
-        }
-
-        function drop() {
-            puyo.pos.y++;
-            const sub = getSubPuyoPos();
-            if (puyo.pos.y >= ROWS || sub.y >= ROWS || (puyo.pos.y >= 0 && board[puyo.pos.y][puyo.pos.x]) || (sub.y >= 0 && board[sub.y][sub.x])) {
-                puyo.pos.y--;
-                freeze();
-                return false;
-            }
-            return true;
-        }
-
-        function freeze() {
-            const sub = getSubPuyoPos();
-            if (puyo.pos.y >= 0) board[puyo.pos.y][puyo.pos.x] = puyo.colors[0];
-            if (sub.y >= 0) board[sub.y][sub.x] = puyo.colors[1];
-            handlePhase();
-        }
-
-        async function handlePhase() {
-            isRunning = false;
-            while (true) {
-                applyGravity();
-                draw();
-                await new Promise(r => setTimeout(r, 150));
-                const matches = findMatches();
-                if (matches.length === 0) break;
-                matches.forEach(p => { board[p.y][p.x] = 0; score += 10; });
-                scoreElement.innerText = "SCORE: " + score;
-                draw();
-                await new Promise(r => setTimeout(r, 150));
-            }
-            spawnPuyo();
-        }
-
-        function applyGravity() {
-            for (let x = 0; x < COLS; x++) {
-                for (let y = ROWS - 1; y > 0; y--) {
-                    if (board[y][x] === 0) {
-                        for (let ny = y - 1; ny >= 0; ny--) {
-                            if (board[ny][x] > 0) {
-                                board[y][x] = board[ny][x];
-                                board[ny][x] = 0;
-                                break;
-                            }
-                        }
+        function drawMatrix(matrix, offset) {
+            if (!matrix) return;
+            matrix.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value !== 0) {
+                        context.fillStyle = colors[value];
+                        context.fillRect(x + offset.x, y + offset.y, 1, 1);
                     }
+                });
+            });
+        }
+
+        function collide(arena, player) {
+            const [m, o] = [player.matrix, player.pos];
+            for (let y = 0; y < m.length; ++y) {
+                for (let x = 0; x < m[y].length; ++x) {
+                    if (m[y][x] !== 0 && (arena[y + o.y] && arena[y + o.y][x + o.x]) !== 0) return true;
+                }
+            }
+            return false;
+        }
+
+        function merge(arena, player) {
+            player.matrix.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value !== 0) arena[y + player.pos.y][x + player.pos.x] = value;
+                });
+            });
+        }
+
+        function rotate(matrix, dir) {
+            for (let y = 0; y < matrix.length; ++y) {
+                for (let x = 0; x < y; ++x) {
+                    [matrix[x][y], matrix[y][x]] = [matrix[y][x], matrix[x][y]];
+                }
+            }
+            if (dir > 0) matrix.forEach(row => row.reverse());
+            else matrix.reverse();
+        }
+
+        function playerRotate(dir) {
+            const pos = player.pos.x;
+            let offset = 1;
+            rotate(player.matrix, dir);
+            while (collide(arena, player)) {
+                player.pos.x += offset;
+                offset = -(offset + (offset > 0 ? 1 : -1));
+                if (offset > player.matrix[0].length) {
+                    rotate(player.matrix, -dir);
+                    player.pos.x = pos;
+                    return;
                 }
             }
         }
 
-        function findMatches() {
-            let matched = [];
-            let checked = Array.from({length: ROWS}, () => Array(COLS).fill(false));
-            for (let y = 0; y < ROWS; y++) {
-                for (let x = 0; x < COLS; x++) {
-                    if (board[y][x] > 0 && !checked[y][x]) {
-                        let group = [];
-                        let color = board[y][x];
-                        let stack = [{x, y}];
-                        while (stack.length > 0) {
-                            let p = stack.pop();
-                            if (p.x < 0 || p.x >= COLS || p.y < 0 || p.y >= ROWS || checked[p.y][p.x] || board[p.y][p.x] !== color) continue;
-                            checked[p.y][p.x] = true;
-                            group.push(p);
-                            stack.push({x: p.x+1, y: p.y}, {x: p.x-1, y: p.y}, {x: p.x, y: p.y+1}, {x: p.x, y: p.y-1});
-                        }
-                        if (group.length >= 4) matched.push(...group);
-                    }
-                }
+        function playerDrop() {
+            player.pos.y++;
+            if (collide(arena, player)) {
+                player.pos.y--;
+                merge(arena, player);
+                playerReset();
+                arenaSweep();
+                updateScore();
             }
-            return matched;
+            dropCounter = 0;
         }
 
-        function spawnPuyo() {
-            puyo = { pos: {x: 2, y: 0}, colors: [Math.floor(Math.random()*4)+1, Math.floor(Math.random()*4)+1], rot: 0, matrix: true };
-            if (puyo.pos.y >= 0 && board[puyo.pos.y][puyo.pos.x]) {
+        function playerMove(dir) {
+            player.pos.x += dir;
+            if (collide(arena, player)) player.pos.x -= dir;
+        }
+
+        function playerReset() {
+            const pieces = 'ILJOTSZ';
+            player.matrix = createPiece(pieces[pieces.length * Math.random() | 0]);
+            player.pos.y = 0;
+            player.pos.x = (arena[0].length / 2 | 0) - (player.matrix[0].length / 2 | 0);
+            if (collide(arena, player)) {
                 alert("GAME OVER!");
                 resetGame();
-            } else {
-                isRunning = true;
-                lastTime = performance.now();
-                update();
+            }
+        }
+
+        function arenaSweep() {
+            let rowCount = 1;
+            outer: for (let y = arena.length - 1; y > 0; --y) {
+                for (let x = 0; x < arena[y].length; ++x) {
+                    if (arena[y][x] === 0) continue outer;
+                }
+                const row = arena.splice(y, 1)[0].fill(0);
+                arena.unshift(row);
+                ++y;
+                player.score += rowCount * 10;
+                rowCount *= 2;
             }
         }
 
@@ -256,28 +236,29 @@
             const deltaTime = time - lastTime;
             lastTime = time;
             dropCounter += deltaTime;
-            if (dropCounter > 1000) {
-                drop();
-                dropCounter = 0;
-            }
+            if (dropCounter > dropInterval) playerDrop();
             draw();
             requestId = requestAnimationFrame(update);
+        }
+
+        function updateScore() {
+            scoreElement.innerText = "SCORE: " + player.score;
         }
 
         function resetGame() {
             isRunning = false;
             cancelAnimationFrame(requestId);
-            board = Array.from({length: ROWS}, () => Array(COLS).fill(0));
-            score = 0;
-            scoreElement.innerText = "SCORE: 0";
-            puyo.matrix = null;
+            arena.forEach(row => row.fill(0));
+            player.score = 0;
+            player.matrix = null;
+            updateScore();
             draw();
             startBtn.disabled = false;
             stopBtn.disabled = true;
             startBtn.innerText = "START";
         }
 
-        // --- ボタン設定 ---
+        // --- コントローラー ---
         const setupBtn = (id, fn) => {
             const el = document.getElementById(id);
             const handler = (e) => { e.preventDefault(); if(isRunning) fn(); draw(); };
@@ -285,21 +266,19 @@
             el.addEventListener('mousedown', handler);
         };
 
-        setupBtn('btn-up', rotate);
-        setupBtn('btn-left', () => move(-1));
-        setupBtn('btn-right', () => move(1));
-        setupBtn('btn-down', drop);
+        setupBtn('btn-up', () => playerRotate(1));
+        setupBtn('btn-left', () => playerMove(-1));
+        setupBtn('btn-right', () => playerMove(1));
+        setupBtn('btn-down', () => playerDrop());
 
         startBtn.addEventListener('click', () => {
             if (!isRunning) {
                 isRunning = true;
                 startBtn.disabled = true;
                 stopBtn.disabled = false;
-                if (!puyo.matrix) spawnPuyo();
-                else {
-                    lastTime = performance.now();
-                    update();
-                }
+                if (!player.matrix) playerReset();
+                lastTime = performance.now();
+                update();
             }
         });
 
@@ -316,10 +295,10 @@
         document.addEventListener('keydown', e => {
             if ([37, 38, 39, 40].includes(e.keyCode)) e.preventDefault();
             if (!isRunning) return;
-            if (e.keyCode === 37) move(-1);
-            if (e.keyCode === 39) move(1);
-            if (e.keyCode === 40) drop();
-            if (e.keyCode === 38) rotate();
+            if (e.keyCode === 37) playerMove(-1);
+            if (e.keyCode === 39) playerMove(1);
+            if (e.keyCode === 40) playerDrop();
+            if (e.keyCode === 38) playerRotate(1);
             draw();
         });
 
