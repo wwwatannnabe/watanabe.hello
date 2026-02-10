@@ -150,7 +150,7 @@
 
         function rotate() {
             const oldRot = puyo.rot;
-            puyo.rot = (puyo.rot + 1) % 4;
+            puyo.rot = (puyo.rot+1)%4;
             const sub = getSubPuyoPos();
             if (sub.x < 0 || sub.x >= COLS || sub.y >= ROWS || (sub.y >= 0 && board[sub.y][sub.x])) {
                 puyo.rot = oldRot;
